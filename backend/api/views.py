@@ -72,3 +72,16 @@ class CategoryTestView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
     serializer_class = serializers.CategoryTestPostSerializer
+
+
+class RecipeView(views.APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.RecipePostSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        recipePost = serializer.save()
+
+        pprint.pprint(vars(recipePost))
+
+        return Response(status=status.HTTP_200_OK)
