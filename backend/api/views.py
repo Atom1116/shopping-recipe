@@ -1,4 +1,3 @@
-# from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import generics
 from rest_framework import views
@@ -11,9 +10,11 @@ from rest_framework import status
 import json
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-# import pprint
+from django.views.decorators.csrf import csrf_exempt
+import pprint
 
 
+# CSRFトークン発行View
 class CsrfApiView(views.APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [SessionAuthentication]
@@ -25,6 +26,10 @@ class CsrfApiView(views.APIView):
 # ユーザー新規作成View
 class UserCreateApiView(generics.CreateAPIView):
     serializer_class = serializers.UserSerializer
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 # ログインView
@@ -57,6 +62,10 @@ class CategoryListView(generics.ListAPIView):
     authentication_classes = [SessionAuthentication]
     serializer_class = serializers.CategoryListSerializer
     queryset = models.Category.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        pprint.pprint(self.request.user.id)
+        return super().get(request, *args, **kwargs)
 
 
 class CategoryTestView(generics.CreateAPIView):
